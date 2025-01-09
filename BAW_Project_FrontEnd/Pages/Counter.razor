@@ -1,0 +1,21 @@
+﻿@page "/counter"
+
+<PageTitle>Counter</PageTitle>
+
+<h1>Counter</h1>
+
+<p role="status">Current count: @currentCount</p>
+
+<button class="btn btn-primary" @onclick="IncrementCount">Click me</button>
+
+@code {
+    private int currentCount = 0;
+
+    private async void IncrementCount()
+    {
+        currentCount++;
+        HttpClient httpClient = new HttpClient();
+        BAW_Project_API bAW_Project_API = new BAW_Project_API("https://localhost:7131", httpClient);
+        await bAW_Project_API.BAsync();
+    }
+}

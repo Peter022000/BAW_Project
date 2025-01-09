@@ -1,0 +1,6 @@
+@BAW_Project_API_HostAddress = http://localhost:5205
+
+GET {{BAW_Project_API_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
