@@ -3,15 +3,15 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BAW_Project_API.Controllers
 {
-    [Authorize(Roles = "User")]
+    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
-    public class UserController : ControllerBase
+    public class AdminController : ControllerBase
     {
         [HttpGet]
         public IActionResult Get()
         {
-            return Ok("You have accessed the User controller.");
+            return Ok("You have accessed the Admin controller.");
         }
     }
 }

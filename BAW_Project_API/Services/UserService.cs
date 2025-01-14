@@ -1,6 +1,4 @@
 ﻿using BAW_Project_API.Data;
-using BAW_Project_API.Dtos;
-using BAW_Project_API.Entities;
 using BAW_Project_API.Interfaces;
 using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
@@ -12,7 +10,7 @@ namespace BAW_Project_API.Services
     public class UserService : IUserService
     {
 
-        private readonly DataContext _context;
+      /*  private readonly DataContext _context;
 
         public UserService(DataContext context)
         {
@@ -57,6 +55,6 @@ namespace BAW_Project_API.Services
             _context.Users.Remove(user);
             await _context.SaveChangesAsync();   
         }
-
+*/
     }
 }
