@@ -18,31 +18,45 @@ namespace BAW_Project_API.Services
             _configuration = configuration;
         }
 
-        public async Task<RoleResult> AddRole([FromBody] string role)
+        public async Task<RoleResult> AddRoleAsync([FromBody] string role)
         {
-            if (!await _roleManager.RoleExistsAsync(role))
+            if (await _roleManager.RoleExistsAsync(role))
             {
-                var result = await _roleManager.CreateAsync(new IdentityRole(role));
-                if (result.Succeeded)
-                {
-                    return new RoleResult { IsSuccess = true, Message ="Role added successfully" });
-                }
-
-                return new RoleResult
-                {
-                    IsSuccess = true,
-                    Message = result.Errors
-                };
-
+                return new RoleResult { IsSuccess = false, Message = "Role already exists" };
             }
 
-            return BadRequest("Role already exists");
+            var result = await _roleManager.CreateAsync(new IdentityRole(role));
+            if (result.Succeeded)
+            {
+                return new RoleResult { IsSuccess = true, Message = "Role added successfully" };
+            }
 
+            return new RoleResult
+            {
+                IsSuccess = false,
+                Message = string.Join(", ", result.Errors.Select(e => e.Description))
+            };
         }
 
-        public Task<RoleResult> AssignRole([FromBody] UserRole model)
+        public async Task<RoleResult> AssignRoleAsync(UserRole model)
         {
-            throw new NotImplementedException();
+            var user = await _userManager.FindByNameAsync(model.Username);
+            if (user == null)
+            {
+                return new RoleResult { IsSuccess = false, Message = "User not found" };
+            }
+
+            var result = await _userManager.AddToRoleAsync(user, model.Role);
+            if (result.Succeeded)
+            {
+                return new RoleResult { IsSuccess = true, Message = "Role assigned successfully" };
+            }
+
+            return new RoleResult
+            {
+                IsSuccess = false,
+                Message = string.Join(", ", result.Errors.Select(e => e.Description))
+            };
         }
     }
 }

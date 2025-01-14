@@ -85,11 +85,11 @@ namespace BAW_Project_API.Services
             var user = new IdentityUser { UserName = model.Username, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
-            if (result.Succeeded)
+/*            if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "User");
             }
-
+*/
             return result;
         }
 

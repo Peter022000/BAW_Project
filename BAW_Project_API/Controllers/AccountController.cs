@@ -1,12 +1,7 @@
 ﻿using BAW_Project_API.Dtos;
 using BAW_Project_API.Interfaces;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.IdentityModel.Tokens;
-using System.IdentityModel.Tokens.Jwt;
-using System.Security.Claims;
-using System.Text;
 
 namespace BAW_Project_API.Controllers
 {
@@ -44,10 +39,10 @@ namespace BAW_Project_API.Controllers
                 return Ok(new { token = result.Token });
             }
 
-            return Unauthorized();
+            return Unauthorized("Wrong login or password");
         }
 
-        [HttpPost("change_password")]
+        [HttpPost("change-password")]
         [Authorize(Roles = "User,Admin")]
         public async Task<IActionResult> ChangePassword([FromBody] ChangePassword model)
         {
