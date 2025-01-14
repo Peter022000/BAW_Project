@@ -54,7 +54,6 @@ namespace BAW_Project_API.Controllers
             }
 
             return BadRequest("Password doesn't match");
-
         }
     }
 }

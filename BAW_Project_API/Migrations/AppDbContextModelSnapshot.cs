@@ -57,6 +57,13 @@ namespace BAW_Project_API.Migrations
                     b.Property<int>("GenreId")
                         .HasColumnType("int");
 
+                    b.Property<bool>("IsLoaned")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LoanedByUserLogin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
+
                     b.Property<string>("Title")
                         .IsRequired()
                         .HasColumnType("nvarchar(max)");

@@ -3,6 +3,10 @@ using BAW_Project_API.Dtos;
 using BAW_Project_API.Interfaces;
 using BAW_Project_API.Models;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Primitives;
+using System.Diagnostics;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 
 namespace BAW_Project_API.Services
 {
@@ -10,13 +14,28 @@ namespace BAW_Project_API.Services
     {
         private readonly AppDbContext _context;
 
-        public BookService(AppDbContext context)
+        private readonly IHttpContextAccessor _httpContextAccessor;
+
+        public BookService(AppDbContext context, IHttpContextAccessor httpContextAccessor)
         {
             _context = context;
+            _httpContextAccessor = httpContextAccessor;
         }
+
 
         public async Task<List<Book>> GetAllBooks()
         {
+            var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+            var jwt = authorizationHeader.Substring("Bearer ".Length).Trim();
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+
+            var claims = token.Claims.Select(claim => (claim.Type, claim.Value)).ToList();
+
+
+            Debug.Write(claims[0].Value);
+
             return await _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
@@ -50,6 +69,44 @@ namespace BAW_Project_API.Services
         {
             _context.Books.Remove(book);
             await _context.SaveChangesAsync();
+        }
+
+        public async Task<bool> LoanBook(int bookId, string userLogin)
+        {
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null || book.IsLoaned)
+            {
+                return false;
+            }
+
+            book.IsLoaned = true;
+            book.LoanedByUserLogin = userLogin;
+
+            _context.Books.Update(book);
+            await _context.SaveChangesAsync();
+
+            return true;
+        }
+        public async Task<bool> ReturnBook(int bookId, string userLogin)
+        {
+            var book = await _context.Books.FindAsync(bookId);
+            if (book == null || !book.IsLoaned)
+            {
+                return false;
+            }
+
+            if (book.LoanedByUserLogin != userLogin)
+            {
+                return false;
+            }
+
+            book.IsLoaned = false;
+            book.LoanedByUserLogin = string.Empty;
+
+            _context.Books.Update(book);
+            await _context.SaveChangesAsync();
+
+            return true;
         }
     }
 }

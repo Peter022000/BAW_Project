@@ -12,7 +12,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace BAW_Project_API.Migrations
 {
     [DbContext(typeof(AppDbContext))]
-    [Migration("20250114220149_Initial")]
+    [Migration("20250114225216_Initial")]
     partial class Initial
     {
         /// <inheritdoc />
@@ -59,6 +59,13 @@ namespace BAW_Project_API.Migrations
 
                     b.Property<int>("GenreId")
                         .HasColumnType("int");
+
+                    b.Property<bool>("IsLoaned")
+                        .HasColumnType("bit");
+
+                    b.Property<string>("LoanedByUserLogin")
+                        .IsRequired()
+                        .HasColumnType("nvarchar(max)");
 
                     b.Property<string>("Title")
                         .IsRequired()

@@ -1,12 +1,7 @@
-﻿using BAW_Project_API.Data;
-using BAW_Project_API.Dtos;
+﻿using BAW_Project_API.Dtos;
 using BAW_Project_API.Interfaces;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Identity;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using Microsoft.IdentityModel.Tokens;
-using System.Diagnostics;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
@@ -85,11 +80,11 @@ namespace BAW_Project_API.Services
             var user = new IdentityUser { UserName = model.Username, Email = model.Email };
             var result = await _userManager.CreateAsync(user, model.Password);
 
-/*            if (result.Succeeded)
+            if (result.Succeeded)
             {
                 await _userManager.AddToRoleAsync(user, "User");
             }
-*/
+
             return result;
         }
 

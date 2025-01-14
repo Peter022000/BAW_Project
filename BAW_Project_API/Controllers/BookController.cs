@@ -2,6 +2,7 @@
 using BAW_Project_API.Dtos;
 using BAW_Project_API.Interfaces;
 using BAW_Project_API.Models;
+using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
 
 namespace BAW_Project_API.Controllers
