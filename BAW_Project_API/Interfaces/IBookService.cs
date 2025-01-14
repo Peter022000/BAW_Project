@@ -10,7 +10,7 @@ namespace BAW_Project_API.Interfaces
         Task AddBook(Book book);
         Task UpdateBook(Book bookDB, BookDto bookDto);
         Task DeleteBook(Book book);
-        Task<bool> LoanBook(int bookId, string userLogin);
-        Task<bool> ReturnBook(int bookId, string userLogin);
+        Task<bool> LoanBook(int bookId);
+        Task<bool> ReturnBook(int bookId);
     }
 }

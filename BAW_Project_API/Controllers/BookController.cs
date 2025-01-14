@@ -7,9 +7,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BAW_Project_API.Controllers
 {
+
     [Route("api/[controller]")]
     [ApiController]
-
     public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
@@ -41,6 +41,7 @@ namespace BAW_Project_API.Controllers
             return Ok(book);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPost]
         public async Task<ActionResult> AddBook(BookDto bookDto)
         {
@@ -51,6 +52,7 @@ namespace BAW_Project_API.Controllers
             return Ok(book);
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpPut("{id}")]
         public async Task<ActionResult> UpdateBook(int id, BookDto bookDto)
         {
@@ -66,6 +68,7 @@ namespace BAW_Project_API.Controllers
             return Ok("Book updated");
         }
 
+        [Authorize(Roles = "Admin")]
         [HttpDelete("{id}")]
         public async Task<ActionResult> DeleteBook(int id)
         {
@@ -79,6 +82,34 @@ namespace BAW_Project_API.Controllers
             await _bookService.DeleteBook(book);
 
             return Ok("Book deleted");
+        }
+
+        [Authorize(Roles = "User")]
+        [HttpPost("{id}/loan")]
+        public async Task<ActionResult> LoanBook(int id)
+        {
+            var result = await _bookService.LoanBook(id);
+
+            if (result)
+            {
+                return Ok("Book loaned successfully");
+            }
+
+            return BadRequest("Book is already loaned or does not exist");
+        }
+
+        [Authorize(Roles = "User,Admin")]
+        [HttpPost("{id}/return")]
+        public async Task<ActionResult> ReturnBook(int id)
+        {
+            var result = await _bookService.ReturnBook(id);
+
+            if (result)
+            {
+                return Ok("Book returned successfully");
+            }
+
+            return BadRequest("Book is not loaned, or only the user who loaned it can return it");
         }
     }
 }

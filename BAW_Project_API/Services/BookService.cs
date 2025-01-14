@@ -25,17 +25,6 @@ namespace BAW_Project_API.Services
 
         public async Task<List<Book>> GetAllBooks()
         {
-            var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
-            var jwt = authorizationHeader.Substring("Bearer ".Length).Trim();
-
-            var handler = new JwtSecurityTokenHandler();
-            var token = handler.ReadJwtToken(jwt);
-
-            var claims = token.Claims.Select(claim => (claim.Type, claim.Value)).ToList();
-
-
-            Debug.Write(claims[0].Value);
-
             return await _context.Books
                 .Include(b => b.Author)
                 .Include(b => b.Genre)
@@ -71,8 +60,18 @@ namespace BAW_Project_API.Services
             await _context.SaveChangesAsync();
         }
 
-        public async Task<bool> LoanBook(int bookId, string userLogin)
+        public async Task<bool> LoanBook(int bookId)
         {
+            var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+            var jwt = authorizationHeader?.Substring("Bearer ".Length).Trim();
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+
+            var claims = token.Claims.Select(claim => (claim.Type, claim.Value)).ToList();
+
+            var userLogin = claims[0].Value;
+
             var book = await _context.Books.FindAsync(bookId);
             if (book == null || book.IsLoaned)
             {
@@ -87,13 +86,23 @@ namespace BAW_Project_API.Services
 
             return true;
         }
-        public async Task<bool> ReturnBook(int bookId, string userLogin)
+        public async Task<bool> ReturnBook(int bookId)
         {
             var book = await _context.Books.FindAsync(bookId);
             if (book == null || !book.IsLoaned)
             {
                 return false;
             }
+
+            var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+            var jwt = authorizationHeader?.Substring("Bearer ".Length).Trim();
+
+            var handler = new JwtSecurityTokenHandler();
+            var token = handler.ReadJwtToken(jwt);
+
+            var claims = token.Claims.Select(claim => (claim.Type, claim.Value)).ToList();
+
+            var userLogin = claims[0].Value;
 
             if (book.LoanedByUserLogin != userLogin)
             {
