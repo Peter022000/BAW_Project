@@ -10,6 +10,10 @@ namespace BAW_Project_API.Mapper
         {
             CreateMap<AuthorDto, Author>();
             CreateMap<Author, AuthorDto>();
+            CreateMap<Book, BookDto>();
+            CreateMap<BookDto, Book>();
+            CreateMap<Genre, GenreDto>();
+            CreateMap<GenreDto, Genre>();
         }
     }
 }

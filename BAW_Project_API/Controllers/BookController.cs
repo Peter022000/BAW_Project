@@ -6,7 +6,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BAW_Project_API.Controllers
 {
-    public class BookController : Controller
+    [Route("api/[controller]")]
+    [ApiController]
+
+    public class BookController : ControllerBase
     {
         private readonly IBookService _bookService;
         private readonly IMapper _mapper;

@@ -6,6 +6,9 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BAW_Project_API.Controllers
 {
+    [Route("api/[controller]")]
+    [ApiController]
+
     public class GenreController : Controller
     {
         private readonly IGenreService _genreService;
