@@ -4,7 +4,15 @@
 @inject ILocalStorageService LocalStorage
 @inject NavigationManager Navigation
 
-<h3>Books List</h3>
+<h3>
+    Books List
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <button class="btn btn-primary ms-3" @onclick="AddBook">Add Book</button>
+        </Authorized>
+    </AuthorizeView>
+
+</h3>
 
 @if (books == null)
 {
@@ -97,5 +105,10 @@ else
     private void EditBook(int bookId)
     {
         Navigation.NavigateTo($"/edit-book/{bookId}");
+    }
+
+    private void AddBook()
+    {
+        Navigation.NavigateTo("/add-book");
     }
 }

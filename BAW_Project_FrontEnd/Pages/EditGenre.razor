@@ -1,0 +1,73 @@
+﻿@page "/edit-genre/{GenreId:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<h3>Edit Genre</h3>
+
+@if (genre == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="genre" OnValidSubmit="HandleSubmit">
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <InputText id="name" class="form-control" @bind-Value="genre.Name" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-danger" @onclick="ConfirmDelete">Delete</button>
+        <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+    </EditForm>
+}
+
+@code {
+    [Parameter] public int GenreId { get; set; }
+    private GenreDto genre = new();
+
+    protected override async Task OnInitializedAsync()
+    {
+        genre = await Http.GetFromJsonAsync<GenreDto>($"https://localhost:7131/api/Genre/{GenreId}");
+    }
+
+    private async Task HandleSubmit()
+    {
+        var response = await Http.PutAsJsonAsync($"https://localhost:7131/api/Genre/{GenreId}", genre);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/genres");
+        }
+        else
+        {
+            Console.WriteLine("Failed to save changes.");
+        }
+    }
+
+    private async Task ConfirmDelete()
+    {
+        bool confirmed = await JSRuntime.InvokeAsync<bool>("confirm", "Are you sure you want to delete this genre?");
+
+        if (confirmed)
+        {
+            var response = await Http.DeleteAsync($"https://localhost:7131/api/Genre/{GenreId}");
+
+            if (response.IsSuccessStatusCode)
+            {
+                Navigation.NavigateTo("/genres");
+            }
+            else
+            {
+                Console.WriteLine("Failed to delete genre.");
+            }
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/genres");
+    }
+}
+

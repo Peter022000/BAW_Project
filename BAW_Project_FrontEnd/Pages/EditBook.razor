@@ -1,4 +1,5 @@
 ﻿@page "/edit-book/{BookId:int}"
+@attribute [Authorize(Roles = "Admin")]
 @inject HttpClient Http
 @inject NavigationManager Navigation
 @inject ILocalStorageService LocalStorage
