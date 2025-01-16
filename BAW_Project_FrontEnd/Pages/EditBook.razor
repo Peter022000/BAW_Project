@@ -38,14 +38,40 @@ else
         </div>
         <button type="submit" class="btn btn-primary">Save Changes</button>
         <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+        <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteBook">Delete</button>
     </EditForm>
+
+    @if (showDeleteConfirmation)
+    {
+        <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="close" @onclick="CancelDelete" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this book?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                        <button type="button" class="btn btn-danger" @onclick="DeleteBook">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
 }
+
 
 @code {
     [Parameter] public int BookId { get; set; }
     private BookDto book = new BookDto();
     private List<AuthorDto> authors = new();
     private List<GenreDto> genres = new();
+        private bool showDeleteConfirmation = false;
 
     protected override async Task OnInitializedAsync()
     {
@@ -81,4 +107,30 @@ else
     {
         Navigation.NavigateTo("/books");
     }
+
+    private void ConfirmDeleteBook()
+    {
+        showDeleteConfirmation = true;
+    }
+
+    private async Task DeleteBook()
+    {
+        var response = await Http.DeleteAsync($"https://localhost:7131/api/Book/{BookId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/books");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete book.");
+        }
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteConfirmation = false;
+    }
+
+
 }
