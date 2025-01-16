@@ -41,6 +41,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddAuthor(AuthorDto authorDto)
         {
             var author = _mapper.Map<Author>(authorDto);
@@ -60,6 +61,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateAuthor(int id, AuthorDto authorDto)
         {
             var authorDB = await _authorService.GetAuthorById(id);
@@ -75,6 +77,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteAuthor(int id)
         {
             var author = await _authorService.GetAuthorById(id);

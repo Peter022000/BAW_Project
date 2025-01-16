@@ -70,6 +70,9 @@ builder.Services.AddAuthorization(options =>
 builder.Logging.ClearProviders();
 builder.Logging.AddConsole();
 
+string MyAllowSpecificOrigins = "_myAllowSpecificOrigins";
+builder.Services.AddCors(options => { options.AddPolicy(name: MyAllowSpecificOrigins, builder => { builder.AllowAnyOrigin().AllowAnyHeader().AllowAnyMethod(); }); });
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
@@ -80,6 +83,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseCors(MyAllowSpecificOrigins);
 
 app.UseAuthentication();
 

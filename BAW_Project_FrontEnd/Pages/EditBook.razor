@@ -1,0 +1,130 @@
+﻿@page "/edit-book/{BookId:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+
+<h3>Edit Book</h3>
+
+@if (book == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="book" OnValidSubmit="HandleSubmit">
+        <div class="mb-3">
+            <label for="title" class="form-label">Title</label>
+            <InputText id="title" class="form-control" @bind-Value="book.Title" />
+        </div>
+        <div class="mb-3">
+            <label for="author" class="form-label">Author</label>
+            <InputSelect id="author" class="form-control" @bind-Value="book.AuthorId">
+                <option value="">-- Select Author --</option>
+                @foreach (var author in authors)
+                {
+                    <option value="@author.Id">@($"{author.FirstName} {author.LastName}")</option>
+                }
+            </InputSelect>
+        </div>
+        <div class="mb-3">
+            <label for="genre" class="form-label">Genre</label>
+            <InputSelect id="genre" class="form-control" @bind-Value="book.GenreId">
+                <option value="">-- Select Genre --</option>
+                @foreach (var genre in genres)
+                {
+                    <option value="@genre.Id">@genre.Name</option>
+                }
+            </InputSelect>
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+        <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteBook">Delete</button>
+    </EditForm>
+
+    @if (showDeleteConfirmation)
+    {
+        <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog" aria-hidden="false">
+            <div class="modal-dialog" role="document">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title">Confirm Deletion</h5>
+                        <button type="button" class="close" @onclick="CancelDelete" aria-label="Close">
+                            <span aria-hidden="true">&times;</span>
+                        </button>
+                    </div>
+                    <div class="modal-body">
+                        <p>Are you sure you want to delete this book?</p>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                        <button type="button" class="btn btn-danger" @onclick="DeleteBook">Delete</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    }
+}
+
+
+@code {
+    [Parameter] public int BookId { get; set; }
+    private BookDto book = new BookDto();
+    private List<AuthorDto> authors = new();
+    private List<GenreDto> genres = new();
+        private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        book = await Http.GetFromJsonAsync<BookDto>($"https://localhost:7131/api/Book/{BookId}");
+
+        authors = await Http.GetFromJsonAsync<List<AuthorDto>>("https://localhost:7131/api/Author");
+        genres = await Http.GetFromJsonAsync<List<GenreDto>>("https://localhost:7131/api/Genre");
+
+    }
+
+    private async Task HandleSubmit()
+    {
+        var response = await Http.PutAsJsonAsync($"https://localhost:7131/api/Book/{BookId}", book);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/books");
+        }
+        else
+        {
+            Console.WriteLine("Failed to save changes.");
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/books");
+    }
+
+    private void ConfirmDeleteBook()
+    {
+        showDeleteConfirmation = true;
+    }
+
+    private async Task DeleteBook()
+    {
+        var response = await Http.DeleteAsync($"https://localhost:7131/api/Book/{BookId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/books");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete book.");
+        }
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteConfirmation = false;
+    }
+
+
+}

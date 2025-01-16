@@ -1,0 +1,61 @@
+﻿@page "/login"
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
+
+<h3>Login</h3>
+
+<EditForm Model="user" OnSubmit="HandleLogin">
+    <label for="username">Name</label>
+    <InputText id="username" @bind-Value="user.Username" /><br />
+    <label for="password">Password</label>
+    <InputText id="password" @bind-Value="user.Password" type="password" /> <br />
+    <button type="submit" class="btn btn-primary">Login</button>
+</EditForm>
+
+@code {
+    BAW_Project_FrontEnd.Login user = new BAW_Project_FrontEnd.Login();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    async Task HandleLogin()
+    {
+        var result = await Http.PostAsJsonAsync("https://localhost:7131/api/Account/login", user);
+
+        if (result.IsSuccessStatusCode)
+        {
+            var response = await result.Content.ReadFromJsonAsync<Dictionary<string, string>>();
+
+            if (response != null && response.ContainsKey("token"))
+            {
+                var token = response["token"];
+
+                await LocalStorage.SetItemAsStringAsync("token", token);
+
+                await AuthStateProvider.GetAuthenticationStateAsync();
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "Token nie został znaleziony.");
+            }
+        }
+        else
+        {
+            var errorContent = await result.Content.ReadAsStringAsync();
+            await JsRuntime.InvokeVoidAsync("alert", errorContent);
+        }
+    }
+}

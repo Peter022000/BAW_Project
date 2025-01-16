@@ -2,8 +2,8 @@
 {
     public class BookDto
     {
-        public string Title { get; set; } = string.Empty;
-        public int AuthorId { get; set; }
-        public int GenreId { get; set; }
+        public required string Title { get; set; } = string.Empty;
+        public required int AuthorId { get; set; }
+        public required int GenreId { get; set; }
     }
 }

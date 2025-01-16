@@ -22,7 +22,6 @@ namespace BAW_Project_API.Services
             _httpContextAccessor = httpContextAccessor;
         }
 
-
         public async Task<List<Book>> GetAllBooks()
         {
             return await _context.Books

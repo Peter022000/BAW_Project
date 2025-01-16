@@ -22,6 +22,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "User,Admin")]
         public async Task<ActionResult<List<Book>>> GetBooks()
         {
             var books = await _bookService.GetAllBooks();
@@ -84,7 +85,7 @@ namespace BAW_Project_API.Controllers
             return Ok("Book deleted");
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         [HttpPost("{id}/loan")]
         public async Task<ActionResult> LoanBook(int id)
         {
