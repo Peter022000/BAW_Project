@@ -7,7 +7,6 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace BAW_Project_API.Controllers
 {
-    [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
     [ApiController]
 
@@ -43,6 +42,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpPost]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> AddGenre(GenreDto genreDto)
         {
             var genre = _mapper.Map<Genre>(genreDto);
@@ -60,6 +60,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpPut("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> UpdateGenre(int id, GenreDto genreDto)
         {
             var genreDB = await _genreService.GetGenreById(id);
@@ -75,6 +76,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpDelete("{id}")]
+        [Authorize(Roles = "Admin")]
         public async Task<ActionResult> DeleteGenre(int id)
         {
             var genre = await _genreService.GetGenreById(id);

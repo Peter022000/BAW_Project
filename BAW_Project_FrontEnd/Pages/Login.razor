@@ -35,13 +35,22 @@
 
         if (result.IsSuccessStatusCode)
         {
-            var token = await result.Content.ReadAsStringAsync();
+            var response = await result.Content.ReadFromJsonAsync<Dictionary<string, string>>();
 
-            await LocalStorage.SetItemAsync("token", token);
+            if (response != null && response.ContainsKey("token"))
+            {
+                var token = response["token"];
 
-            await AuthStateProvider.GetAuthenticationStateAsync();
+                await LocalStorage.SetItemAsStringAsync("token", token);
 
-            Navigation.NavigateTo("/");
+                await AuthStateProvider.GetAuthenticationStateAsync();
+
+                Navigation.NavigateTo("/");
+            }
+            else
+            {
+                await JsRuntime.InvokeVoidAsync("alert", "Token nie został znaleziony.");
+            }
         }
         else
         {

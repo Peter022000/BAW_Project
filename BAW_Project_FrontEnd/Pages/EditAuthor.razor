@@ -1,0 +1,112 @@
+﻿@page "/edit-author/{AuthorId:int}"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject NavigationManager Navigation
+@inject ILocalStorageService LocalStorage
+
+<h3>Edit Author</h3>
+
+@if (author == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <EditForm Model="author" OnValidSubmit="HandleSubmit">
+        <div class="mb-3">
+            <label for="firstName" class="form-label">First Name</label>
+            <InputText id="firstName" class="form-control" @bind-Value="author.FirstName" />
+        </div>
+        <div class="mb-3">
+            <label for="lastName" class="form-label">Last Name</label>
+            <InputText id="lastName" class="form-control" @bind-Value="author.LastName" />
+        </div>
+        <button type="submit" class="btn btn-primary">Save Changes</button>
+        <button type="button" class="btn btn-secondary" @onclick="GoBack">Cancel</button>
+        <button type="button" class="btn btn-danger" @onclick="ConfirmDeleteAuthor">Delete</button>
+    </EditForm>
+}
+
+@if (showDeleteConfirmation)
+{
+    <div class="modal fade show" style="display: block;" tabindex="-1" role="dialog" aria-hidden="false">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title">Confirm Deletion</h5>
+                    <button type="button" class="close" @onclick="CancelDelete" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    <p>Are you sure you want to delete this author?</p>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" @onclick="CancelDelete">Cancel</button>
+                    <button type="button" class="btn btn-danger" @onclick="DeleteAuthor">Delete</button>
+                </div>
+            </div>
+        </div>
+    </div>
+}
+
+@code {
+    [Parameter] public int AuthorId { get; set; }
+    private AuthorDto author = new AuthorDto();
+    private bool showDeleteConfirmation = false;
+
+    protected override async Task OnInitializedAsync()
+    {
+        var token = await LocalStorage.GetItemAsStringAsync("token");
+        if (!string.IsNullOrEmpty(token))
+        {
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
+        author = await Http.GetFromJsonAsync<AuthorDto>($"https://localhost:7131/api/Author/{AuthorId}");
+    }
+
+    private async Task HandleSubmit()
+    {
+        var response = await Http.PutAsJsonAsync($"https://localhost:7131/api/Author/{AuthorId}", author);
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/authors");
+        }
+        else
+        {
+            Console.WriteLine("Failed to save changes.");
+        }
+    }
+
+    private void GoBack()
+    {
+        Navigation.NavigateTo("/authors");
+    }
+
+    private void ConfirmDeleteAuthor()
+    {
+        showDeleteConfirmation = true;
+    }
+
+    private async Task DeleteAuthor()
+    {
+        var response = await Http.DeleteAsync($"https://localhost:7131/api/Author/{AuthorId}");
+
+        if (response.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("/authors");
+        }
+        else
+        {
+            Console.WriteLine("Failed to delete author.");
+        }
+    }
+
+    private void CancelDelete()
+    {
+        showDeleteConfirmation = false;
+    }
+}

@@ -12,16 +12,28 @@ namespace BAW_Project_API.Services
     {
         private readonly UserManager<IdentityUser> _userManager;
         private readonly IConfiguration _configuration;
+        private readonly IHttpContextAccessor _httpContextAccessor;
 
-        public AccountService(UserManager<IdentityUser> userManager, IConfiguration configuration)
+        public AccountService(UserManager<IdentityUser> userManager, IConfiguration configuration, IHttpContextAccessor httpContextAccessor)
         {
             _userManager = userManager;
             _configuration = configuration;
+            _httpContextAccessor = httpContextAccessor;
         }
 
         public async Task<AuthResult> ChangePasswordAsync(ChangePassword model)
         {
-            var user = await _userManager.FindByNameAsync(model.Username);
+            var authorizationHeader = _httpContextAccessor.HttpContext?.Request.Headers["Authorization"].ToString();
+            var jwt = authorizationHeader?.Substring("Bearer ".Length).Trim();
+
+            var handler = new JwtSecurityTokenHandler();
+            var tokenToGetLogin = handler.ReadJwtToken(jwt);
+
+            var claims = tokenToGetLogin.Claims.Select(claim => (claim.Type, claim.Value)).ToList();
+
+            var userLogin = claims[0].Value;
+
+            var user = await _userManager.FindByNameAsync(userLogin);
             if (user != null && await _userManager.CheckPasswordAsync(user, model.OldPassword))
             {
                 var token = await _userManager.GeneratePasswordResetTokenAsync(user);

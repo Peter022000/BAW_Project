@@ -25,6 +25,14 @@ namespace BAW_Project_FrontEnd
             if (!string.IsNullOrEmpty(token))
             {
                 identity = new ClaimsIdentity(ParseClaimsFromJwt(token), "jwt");
+
+                var usernameClaim = identity.FindFirst("sub");
+                if (usernameClaim != null)
+                {
+                    var username = usernameClaim.Value;
+                    await _localStorage.SetItemAsStringAsync("username", username);
+                }
+
                 _http.DefaultRequestHeaders.Authorization =
                     new AuthenticationHeaderValue("Bearer", token.Replace("\"", ""));
             }

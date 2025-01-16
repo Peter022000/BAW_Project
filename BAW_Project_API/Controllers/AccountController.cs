@@ -53,7 +53,7 @@ namespace BAW_Project_API.Controllers
                 return Ok(new { message = "Password changed successfully" });
             }
 
-            return BadRequest("Password doesn't match");
+            return BadRequest("Old password doesn't match or is too short");
         }
     }
 }
