@@ -1,0 +1,103 @@
+﻿@page "/books"
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+
+<h3>Books List</h3>
+
+@if (books == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Title</th>
+                <th>Author</th>
+                <th>Genre</th>
+                <th>Loaned</th>
+                <th>Loaned by:</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in books)
+            {
+                <tr>
+                    <td>@book.Title</td>
+                    <td>@book.Author.FirstName @book.Author.LastName</td>
+                    <td>@book.Genre.Name</td>
+                    <td>@(book.IsLoaned ? "Yes" : "No")</td>
+                    <td>@(book.LoanedByUserLogin == username ? "you" : book.LoanedByUserLogin)</td>
+                    <td>
+                        @if (book.IsLoaned && (book.LoanedByUserLogin == username || book.LoanedByUserLogin == "admin"))
+                        {
+                            <button class="btn btn-warning" @onclick="() => ReturnBook(book.Id)">Return</button>
+                        }
+                        else if (!book.IsLoaned)
+                        {
+                            <button class="btn btn-success" @onclick="() => LoanBook(book.Id)">Loan</button>
+                        }
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<Book> books;
+    private string username = string.Empty;
+    private string token = string.Empty;
+
+    protected override async Task OnInitializedAsync()
+    {
+        token = await LocalStorage.GetItemAsync<string>("token");
+        username = await LocalStorage.GetItemAsync<string>("username");
+
+        books = await Http.GetFromJsonAsync<List<Book>>("https://localhost:7131/api/Book");
+    }
+
+    private async Task ReturnBook(int bookId)
+    {
+        Console.WriteLine(token);
+
+        if (!string.IsNullOrEmpty(token))
+        {
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
+        var response = await Http.PostAsync($"https://localhost:7131/api/Book/{bookId}/return", null);
+
+        if (response.IsSuccessStatusCode)
+        {
+            books = await Http.GetFromJsonAsync<List<Book>>("https://localhost:7131/api/Book");
+        }
+        else
+        {
+            Console.WriteLine("Failed to return the book");
+        }
+    }
+
+    private async Task LoanBook(int bookId)
+    {
+        if (!string.IsNullOrEmpty(token))
+        {
+            Http.DefaultRequestHeaders.Authorization =
+                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
+        }
+
+        var response = await Http.PostAsync($"https://localhost:7131/api/Book/{bookId}/loan", null);
+
+        if (response.IsSuccessStatusCode)
+        {
+            books = await Http.GetFromJsonAsync<List<Book>>("https://localhost:7131/api/Book");
+        }
+        else
+        {
+            Console.WriteLine("Failed to loan the book");
+        }
+    }
+}

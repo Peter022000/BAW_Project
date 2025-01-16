@@ -22,6 +22,7 @@ namespace BAW_Project_API.Controllers
         }
 
         [HttpGet]
+        [Authorize(Roles = "User,Admin")]
         public async Task<ActionResult<List<Book>>> GetBooks()
         {
             var books = await _bookService.GetAllBooks();
