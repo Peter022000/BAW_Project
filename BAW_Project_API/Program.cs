@@ -18,6 +18,9 @@ builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddScoped<IAccountService,AccountService>();
 builder.Services.AddScoped<IRoleService, RoleService>();
+builder.Services.AddScoped<IAuthorService, AuthorService>();
+builder.Services.AddScoped<IGenreService, GenreService>();
+builder.Services.AddScoped<IBookService, BookService>();
 
 builder.Services.AddAutoMapper(typeof(Program).Assembly);
 
@@ -55,6 +58,8 @@ builder.Services.AddAuthentication(options =>
         IssuerSigningKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(builder.Configuration["Jwt:Key"]!))
     };
 });
+
+builder.Services.AddHttpContextAccessor();
 
 builder.Services.AddAuthorization(options =>
 {

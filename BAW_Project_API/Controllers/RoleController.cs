@@ -8,7 +8,8 @@ namespace BAW_Project_API.Controllers
 {
     [Authorize(Roles = "Admin")]
     [Route("api/[controller]")]
-    public class RoleController : Controller
+    [ApiController]
+    public class RoleController : ControllerBase
     {
         private readonly IRoleService _roleService;
 
