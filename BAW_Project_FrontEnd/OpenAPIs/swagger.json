@@ -825,10 +825,6 @@
       "ChangePassword": {
         "type": "object",
         "properties": {
-          "username": {
-            "type": "string",
-            "nullable": true
-          },
           "oldPassword": {
             "type": "string",
             "nullable": true

@@ -1,4 +1,5 @@
 ﻿@page "/books"
+@attribute [Authorize(Roles = "User,Admin")]
 @inject HttpClient Http
 @inject ILocalStorageService LocalStorage
 
@@ -53,7 +54,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        token = await LocalStorage.GetItemAsync<string>("token");
         username = await LocalStorage.GetItemAsync<string>("username");
 
         books = await Http.GetFromJsonAsync<List<Book>>("https://localhost:7131/api/Book");
