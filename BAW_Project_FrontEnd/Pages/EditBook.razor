@@ -76,13 +76,6 @@ else
 
     protected override async Task OnInitializedAsync()
     {
-        var token = await LocalStorage.GetItemAsStringAsync("token");
-        if (!string.IsNullOrEmpty(token))
-        {
-            Http.DefaultRequestHeaders.Authorization =
-                new System.Net.Http.Headers.AuthenticationHeaderValue("Bearer", token);
-        }
-
         book = await Http.GetFromJsonAsync<BookDto>($"https://localhost:7131/api/Book/{BookId}");
 
         authors = await Http.GetFromJsonAsync<List<AuthorDto>>("https://localhost:7131/api/Author");
