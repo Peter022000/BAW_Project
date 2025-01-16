@@ -1,0 +1,49 @@
+﻿@page "/register"
+@inject HttpClient Http
+@inject AuthenticationStateProvider AuthStateProvider
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@inject IJSRuntime JsRuntime
+
+<h3>Register</h3>
+
+<EditForm Model="user" OnSubmit="HandleRegister">
+    <label for="username">Name</label>
+    <InputText id="username" @bind-Value="user.Username" /> <br />
+    <label for="password">Email</label> 
+    <InputText id="email" @bind-Value="user.Email" /> <br />
+    <label for="password">Password</label>
+    <InputText id="password" @bind-Value="user.Password" type="password" /> <br />
+    <button type="submit" class="btn btn-primary">Register
+    </button>
+</EditForm>
+
+@code {
+    BAW_Project_FrontEnd.Register user = new BAW_Project_FrontEnd.Register();
+
+    protected override async Task OnInitializedAsync()
+    {
+        var authState = await AuthStateProvider.GetAuthenticationStateAsync();
+        var user = authState.User;
+
+        if (user.Identity?.IsAuthenticated == true)
+        {
+            Navigation.NavigateTo("/");
+        }
+    }
+
+    async Task HandleRegister()
+    {
+        var result = await Http.PostAsJsonAsync("https://localhost:7131/api/Account/register", user);
+
+        if (result.IsSuccessStatusCode)
+        {
+            Navigation.NavigateTo("login");
+            await JsRuntime.InvokeVoidAsync("alert", "Registered");
+        } else
+        {
+            var errorContent = await result.Content.ReadAsStringAsync();
+            await JsRuntime.InvokeVoidAsync("alert", errorContent);
+        }
+    }
+}
