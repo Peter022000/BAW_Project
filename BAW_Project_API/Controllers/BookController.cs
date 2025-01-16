@@ -85,7 +85,7 @@ namespace BAW_Project_API.Controllers
             return Ok("Book deleted");
         }
 
-        [Authorize(Roles = "User")]
+        [Authorize(Roles = "User,Admin")]
         [HttpPost("{id}/loan")]
         public async Task<ActionResult> LoanBook(int id)
         {

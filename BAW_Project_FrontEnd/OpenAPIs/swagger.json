@@ -758,6 +758,11 @@
       "AuthorDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "firstName": {
             "type": "string",
             "nullable": true
@@ -853,6 +858,11 @@
       "GenreDto": {
         "type": "object",
         "properties": {
+          "id": {
+            "type": "integer",
+            "format": "int32",
+            "nullable": true
+          },
           "name": {
             "type": "string",
             "nullable": true

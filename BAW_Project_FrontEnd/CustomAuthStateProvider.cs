@@ -30,9 +30,7 @@ namespace BAW_Project_FrontEnd
                 if (usernameClaim != null)
                 {
                     var username = usernameClaim.Value;
-                    Console.WriteLine(username);
-                    username = username.Replace("\"", string.Empty);
-                    await _localStorage.SetItemAsync("username", username);
+                    await _localStorage.SetItemAsStringAsync("username", username);
                 }
 
                 _http.DefaultRequestHeaders.Authorization =

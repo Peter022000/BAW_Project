@@ -41,7 +41,7 @@
             {
                 var token = response["token"];
 
-                await LocalStorage.SetItemAsync("token", token);
+                await LocalStorage.SetItemAsStringAsync("token", token);
 
                 await AuthStateProvider.GetAuthenticationStateAsync();
 
