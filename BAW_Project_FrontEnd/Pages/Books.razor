@@ -66,7 +66,7 @@ else
     private string username = string.Empty;
     private string token = string.Empty;
 
-    protected override async Task OnParametersSetAsync()
+    protected override async Task OnInitializedAsync()
     {
         Console.WriteLine("test");
         username = await LocalStorage.GetItemAsync<string>("username");
