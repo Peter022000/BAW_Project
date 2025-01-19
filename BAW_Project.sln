@@ -5,7 +5,7 @@ VisualStudioVersion = 17.9.34701.34
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BAW_Project_API", "BAW_Project_API\BAW_Project_API.csproj", "{23D7833E-252B-4A09-BC62-15D2EBC32A16}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BAW_Project_FrontEnd", "BAW_Project_FrontEnd\BAW_Project_FrontEnd.csproj", "{BF42FBC1-ED53-4E47-9901-EFF09F56624B}"
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "BAW_Project_FrontEnd", "BAW_Project_FrontEnd\BAW_Project_FrontEnd.csproj", "{BF42FBC1-ED53-4E47-9901-EFF09F56624B}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

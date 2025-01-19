@@ -1,0 +1,65 @@
+﻿@page "/genres"
+@attribute [Authorize(Roles = "Admin")]
+@inject HttpClient Http
+@inject ILocalStorageService LocalStorage
+@inject NavigationManager Navigation
+@inject IJSRuntime JSRuntime
+
+<h3>
+    Genres List
+    <AuthorizeView Roles="Admin">
+        <Authorized>
+            <button class="btn btn-primary ms-3" @onclick="AddGenre">Add Genre</button>
+        </Authorized>
+    </AuthorizeView>
+</h3>
+
+@if (genres == null)
+{
+    <p><em>Loading...</em></p>
+}
+else
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Name</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var genre in genres)
+            {
+                <tr>
+                    <td>@genre.Name</td>
+                    <td>
+                        <AuthorizeView Roles="Admin">
+                            <Authorized>
+                                <button class="btn btn-info" @onclick="() => EditGenre(genre.Id.Value)">Edit</button>
+                            </Authorized>
+                        </AuthorizeView>
+                    </td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+
+@code {
+    private List<GenreDto> genres;
+
+    protected override async Task OnInitializedAsync()
+    {
+        genres = await Http.GetFromJsonAsync<List<GenreDto>>("https://localhost:7131/api/Genre");
+    }
+
+    private void EditGenre(int genreId)
+    {
+        Navigation.NavigateTo($"/edit-genre/{genreId}");
+    }
+
+    private void AddGenre()
+    {
+        Navigation.NavigateTo("/add-genre");
+    }
+}
